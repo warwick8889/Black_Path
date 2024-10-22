@@ -1,5 +1,6 @@
 import random
 import os
+import ai
 
 #Create 10x10 board
 board = [['.' for _ in range(10)] for _ in range(10)]
@@ -133,8 +134,6 @@ def clear_terminal():
     if os.name == 'nt':
         os.system('cls')
 
-
-
 #Prompt function
 def prompt():
     random_point = random_edge_point()
@@ -144,11 +143,16 @@ def prompt():
     
     while game_running:
         
-        clear_terminal()
+        ##clear_terminal()
         display_grid(random_point, None, 'X')
         
+        # Call the AI's decision-making function
+        action = ai.make_decision(board, previous_point, random_point)
+        constant = action    
+        
         #Prompt for user input
-        constant = input("Choose the next tile (T, S, Z): ").upper()
+        #constant = input("Choose the next tile (T, S, Z): ").upper()
+    
         
         #Check for valid input
         while constant not in ['T', 'S', 'Z']:
@@ -162,12 +166,13 @@ def prompt():
             game_running = False
     
         #If the next point has an existing letter, trigger the rule
-        while board[next_pt[0]][next_pt[1]] in [T, S, Z]:
-            next_pt = handle_existing_rule(random_point, next_pt)
-            if is_out_of_bounds(next_pt):
-                print(f"Terminating: The next point {next_pt} is out of bounds!")
-                game_running = False
-                break
+        if (game_running == True):
+            while board[next_pt[0]][next_pt[1]] in [T, S, Z]:
+                next_pt = handle_existing_rule(random_point, next_pt)
+                if is_out_of_bounds(next_pt):
+                    print(f"Terminating: The next point {next_pt} is out of bounds!")
+                    game_running = False
+                    break
         #Display the grid with current, next, and previous placements
         display_grid(random_point, next_pt, constant)
     
